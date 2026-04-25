@@ -107,6 +107,9 @@ model Tenant {
   roles             Role[]
   permissions       TenantPermission[]
   announcements     Announcement[]
+  leaveTypes        LeaveType[]
+  holidays          Holiday[]
+  payrollRuns       PayrollRun[]
 
   @@map("tenants")
 }
@@ -366,8 +369,13 @@ model Employee {
   location         Location?      @relation(fields: [locationId], references: [id])
   reportingManager Employee?      @relation("ReportingHierarchy", fields: [reportingTo], references: [id])
   directReports    Employee[]     @relation("ReportingHierarchy")
-  documents        EmployeeDocument[]
-  salaryStructure  SalaryStructure?
+  documents             EmployeeDocument[]
+  salaryStructure       SalaryStructure?
+  leaveBalances         LeaveBalance[]
+  leaveRequests         LeaveRequest[]     @relation("LeaveApplicant")
+  reviewedLeaves        LeaveRequest[]     @relation("LeaveReviewer")
+  attendanceRecords     AttendanceRecord[]
+  payrollEntries        PayrollEntry[]
 
   @@unique([tenantId, email])
   @@unique([tenantId, employeeCode])
@@ -388,7 +396,198 @@ model EmployeeDocument {
   @@map("employee_documents")
 }
 
-// ─── Salary Structure (stub for Phase 3 payroll) ─────────────────────────────
+// ─── Leave Management ─────────────────────────────────────────────────────────
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum LeaveCategory {
+  CASUAL
+  SICK
+  PRIVILEGE
+  MATERNITY
+  PATERNITY
+  COMPENSATORY
+  UNPAID
+  OTHER
+}
+
+model LeaveType {
+  id               String        @id @default(cuid())
+  tenantId         String
+  name             String
+  code             String        // e.g., CL, SL, PL
+  category         LeaveCategory
+  daysAllowed      Int
+  isCarryForward   Boolean       @default(false)
+  maxCarryForward  Int           @default(0)
+  isPaidLeave      Boolean       @default(true)
+  requiresApproval Boolean       @default(true)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  tenant           Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  leaveRequests    LeaveRequest[]
+  leaveBalances    LeaveBalance[]
+
+  @@unique([tenantId, code])
+  @@map("leave_types")
+}
+
+model LeaveBalance {
+  id             String    @id @default(cuid())
+  tenantId       String
+  employeeId     String
+  leaveTypeId    String
+  year           Int
+  allocated      Float
+  used           Float     @default(0)
+  pending        Float     @default(0)
+  carriedForward Float     @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  employee       Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  leaveType      LeaveType @relation(fields: [leaveTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, leaveTypeId, year])
+  @@map("leave_balances")
+}
+
+model LeaveRequest {
+  id            String      @id @default(cuid())
+  tenantId      String
+  employeeId    String
+  leaveTypeId   String
+  startDate     DateTime    @db.Date
+  endDate       DateTime    @db.Date
+  days          Float
+  reason        String?
+  status        LeaveStatus @default(PENDING)
+  reviewedBy    String?
+  reviewedAt    DateTime?
+  reviewComment String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  employee      Employee    @relation("LeaveApplicant", fields: [employeeId], references: [id], onDelete: Cascade)
+  leaveType     LeaveType   @relation(fields: [leaveTypeId], references: [id])
+  reviewer      Employee?   @relation("LeaveReviewer", fields: [reviewedBy], references: [id])
+
+  @@map("leave_requests")
+}
+
+// ─── Holidays ─────────────────────────────────────────────────────────────────
+
+model Holiday {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  date      DateTime @db.Date
+  isOptional Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, date])
+  @@map("holidays")
+}
+
+// ─── Attendance ───────────────────────────────────────────────────────────────
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  HALF_DAY
+  ON_LEAVE
+  HOLIDAY
+  WEEKEND
+  LATE
+  WORK_FROM_HOME
+}
+
+model AttendanceRecord {
+  id          String           @id @default(cuid())
+  tenantId    String
+  employeeId  String
+  date        DateTime         @db.Date
+  checkIn     DateTime?
+  checkOut    DateTime?
+  status      AttendanceStatus @default(PRESENT)
+  hoursWorked Float?
+  notes       String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  employee    Employee         @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+
+  @@unique([employeeId, date])
+  @@map("attendance_records")
+}
+
+// ─── Payroll ──────────────────────────────────────────────────────────────────
+
+enum PayrollStatus {
+  DRAFT
+  PROCESSING
+  COMPLETED
+  CANCELLED
+}
+
+model PayrollRun {
+  id          String        @id @default(cuid())
+  tenantId    String
+  month       Int
+  year        Int
+  status      PayrollStatus @default(DRAFT)
+  processedAt DateTime?
+  createdBy   String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  entries     PayrollEntry[]
+
+  @@unique([tenantId, month, year])
+  @@map("payroll_runs")
+}
+
+model PayrollEntry {
+  id              String     @id @default(cuid())
+  payrollRunId    String
+  tenantId        String
+  employeeId      String
+  basic           Int
+  hra             Int
+  specialAllowance Int
+  otherEarnings   Int        @default(0)
+  grossEarnings   Int
+  pf              Int
+  esic            Int
+  tds             Int
+  otherDeductions Int        @default(0)
+  totalDeductions Int
+  netPay          Int
+  workingDays     Int
+  paidDays        Float
+  lopDays         Float      @default(0)
+  payslipUrl      String?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  payrollRun      PayrollRun @relation(fields: [payrollRunId], references: [id], onDelete: Cascade)
+  employee        Employee   @relation(fields: [employeeId], references: [id])
+
+  @@unique([payrollRunId, employeeId])
+  @@map("payroll_entries")
+}
+
+// ─── Salary Structure ─────────────────────────────────────────────────────────
 
 model SalaryStructure {
   id              String   @id @default(cuid())
