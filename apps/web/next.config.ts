@@ -4,8 +4,6 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   output: 'standalone',
   outputFileTracingRoot: path.join(__dirname, '../../'),
-  // Read .env from the monorepo root instead of apps/web
-  envDir: path.join(__dirname, '../../'),
   transpilePackages: ['@klickkk/db'],
   images: {
     remotePatterns: [

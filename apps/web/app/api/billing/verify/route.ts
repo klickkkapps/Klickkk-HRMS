@@ -5,7 +5,8 @@ import {
   verifyPaymentSignature,
   verifySubscriptionSignature,
   PLAN_PRICES,
-  razorpay,
+  getRazorpay,
+  isRazorpayConfigured,
 } from '@/lib/razorpay'
 import { createInvoice, buildExtraSlotLineItem, buildPlanLineItem } from '@/lib/invoice'
 import { addMonths } from 'date-fns'
@@ -32,6 +33,10 @@ const schema = z.discriminatedUnion('type', [
 ])
 
 export async function POST(req: NextRequest) {
+  if (!isRazorpayConfigured()) {
+    return NextResponse.json({ error: 'Payments are not configured' }, { status: 503 })
+  }
+
   const session = await auth()
   if (!session?.user.tenantId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -96,6 +101,7 @@ export async function POST(req: NextRequest) {
     // Fetch Razorpay subscription details for accurate cycle dates
     let cycleStart = now
     try {
+      const razorpay = getRazorpay()
       const rzpSub = await razorpay.subscriptions.fetch(data.razorpay_subscription_id)
       if (rzpSub.current_start) cycleStart = new Date(rzpSub.current_start * 1000)
       if (rzpSub.current_end) cycleEnd.setTime(rzpSub.current_end * 1000)

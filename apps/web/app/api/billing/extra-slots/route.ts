@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@klickkk/db'
 import { auth } from '@/lib/auth'
-import { razorpay, EXTRA_SLOT_PRICE_PAISE } from '@/lib/razorpay'
+import { getRazorpay, isRazorpayConfigured, EXTRA_SLOT_PRICE_PAISE } from '@/lib/razorpay'
 import { z } from 'zod'
 
 const schema = z.object({
@@ -10,6 +10,10 @@ const schema = z.object({
 })
 
 export async function POST(req: NextRequest) {
+  if (!isRazorpayConfigured()) {
+    return NextResponse.json({ error: 'Payments are not configured' }, { status: 503 })
+  }
+
   const session = await auth()
   if (!session?.user.tenantId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -26,6 +30,7 @@ export async function POST(req: NextRequest) {
   if (!subscription) return NextResponse.json({ error: 'Subscription not found' }, { status: 404 })
 
   const totalPaise = slots * EXTRA_SLOT_PRICE_PAISE
+  const razorpay = getRazorpay()
 
   // Create Razorpay Order
   const order = await razorpay.orders.create({

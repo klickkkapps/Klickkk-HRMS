@@ -1,10 +1,20 @@
 import Razorpay from 'razorpay'
 import crypto from 'crypto'
 
-export const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID!,
-  key_secret: process.env.RAZORPAY_KEY_SECRET!,
-})
+export function isRazorpayConfigured(): boolean {
+  return Boolean(process.env.RAZORPAY_KEY_ID && process.env.RAZORPAY_KEY_SECRET)
+}
+
+export function getRazorpay() {
+  if (!isRazorpayConfigured()) {
+    throw new Error('Razorpay is not configured')
+  }
+
+  return new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID!,
+    key_secret: process.env.RAZORPAY_KEY_SECRET!,
+  })
+}
 
 export const PLAN_PRICES = {
   STARTER: {
@@ -34,6 +44,10 @@ export function verifyPaymentSignature(params: {
   paymentId: string
   signature: string
 }): boolean {
+  if (!process.env.RAZORPAY_KEY_SECRET) {
+    throw new Error('Razorpay is not configured')
+  }
+
   const body = `${params.orderId}|${params.paymentId}`
   const expected = crypto
     .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
@@ -48,6 +62,10 @@ export function verifySubscriptionSignature(params: {
   paymentId: string
   signature: string
 }): boolean {
+  if (!process.env.RAZORPAY_KEY_SECRET) {
+    throw new Error('Razorpay is not configured')
+  }
+
   const body = `${params.paymentId}|${params.subscriptionId}`
   const expected = crypto
     .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET!)
@@ -58,6 +76,10 @@ export function verifySubscriptionSignature(params: {
 
 /** Verify Razorpay webhook signature */
 export function verifyWebhookSignature(body: string, signature: string): boolean {
+  if (!process.env.RAZORPAY_WEBHOOK_SECRET) {
+    throw new Error('Razorpay webhook secret is not configured')
+  }
+
   const expected = crypto
     .createHmac('sha256', process.env.RAZORPAY_WEBHOOK_SECRET!)
     .update(body)
