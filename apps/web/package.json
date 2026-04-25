@@ -17,7 +17,7 @@
     "next-auth": "^5.0.0-beta.25",
     "bcryptjs": "^2.4.3",
     "razorpay": "^2.9.6",
-    "resend": "^4.1.2",
+    "nodemailer": "^6.10.1",
     "react-email": "^3.0.4",
     "@react-email/components": "^0.0.31",
     "zod": "^3.24.1",
@@ -51,6 +51,7 @@
   "devDependencies": {
     "@klickkk/config": "*",
     "@types/bcryptjs": "^2.4.6",
+    "@types/nodemailer": "^6.4.17",
     "@types/node": "^22.10.7",
     "@types/react": "^19.0.5",
     "@types/react-dom": "^19.0.3",

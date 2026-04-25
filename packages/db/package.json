@@ -5,11 +5,11 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push",
-    "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio",
-    "db:seed": "ts-node prisma/seed.ts"
+    "db:generate": "prisma generate --env-file ../../.env",
+    "db:push": "prisma db push --env-file ../../.env",
+    "db:migrate": "prisma migrate dev --env-file ../../.env",
+    "db:studio": "prisma studio --env-file ../../.env",
+    "db:seed": "node --env-file=../../.env -r ts-node/register prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.2.1",
