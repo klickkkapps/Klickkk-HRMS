@@ -9,7 +9,17 @@ const loginSchema = z.object({
   password: z.string().min(1),
 })
 
+for (const key of ['AUTH_URL', 'NEXTAUTH_URL']) {
+  const value = process.env[key]
+  if (value && !/^https?:\/\//.test(value)) {
+    process.env[key] = `https://${value}`
+  }
+}
+
+process.env.AUTH_TRUST_HOST = 'true'
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
   session: { strategy: 'jwt' },
   pages: { signIn: '/login' },
   providers: [

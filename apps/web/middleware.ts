@@ -5,18 +5,19 @@ import type { NextRequest } from 'next/server'
 export default auth(async (req: NextRequest & { auth: any }) => {
   const { pathname } = req.nextUrl
   const session = req.auth
+  const user = session?.user
 
   // ── Super admin section ──────────────────────────────────────────────────
   if (pathname.startsWith('/superadmin')) {
     // Login page: allow unauthenticated; redirect already-logged-in admins
     if (pathname === '/superadmin') {
-      if (session?.user?.isSuperAdmin) {
+      if (user?.isSuperAdmin) {
         return NextResponse.redirect(new URL('/superadmin/dashboard', req.url))
       }
       return NextResponse.next()
     }
     // All other /superadmin/* require a super admin session
-    if (!session?.user?.isSuperAdmin) {
+    if (!user?.isSuperAdmin) {
       return NextResponse.redirect(new URL('/superadmin', req.url))
     }
     return NextResponse.next()
@@ -33,19 +34,19 @@ export default auth(async (req: NextRequest & { auth: any }) => {
   }
 
   // ── Require session for all other routes ──────────────────────────────────
-  if (!session) {
+  if (!user) {
     const loginUrl = new URL('/login', req.url)
     loginUrl.searchParams.set('callbackUrl', pathname)
     return NextResponse.redirect(loginUrl)
   }
 
   // Super admin accidentally on tenant routes → back to their panel
-  if (session.user.isSuperAdmin) {
+  if (user.isSuperAdmin) {
     return NextResponse.redirect(new URL('/superadmin/dashboard', req.url))
   }
 
   // Tenant must exist for all dashboard routes
-  if (!session.user.tenantId) {
+  if (!user.tenantId) {
     return NextResponse.redirect(new URL('/onboarding', req.url))
   }
 
