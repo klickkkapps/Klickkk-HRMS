@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import { Eye, EyeOff, Loader2, UserX } from 'lucide-react'
+import { Eye, EyeOff, Loader2, UserX, ArrowRight } from 'lucide-react'
 
 const schema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -16,6 +16,9 @@ const schema = z.object({
 })
 
 type FormData = z.infer<typeof schema>
+
+const inputClass =
+  'w-full px-3.5 py-2.5 bg-zinc-800/60 border border-white/[0.08] rounded-xl text-sm text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all'
 
 function LoginForm() {
   const router = useRouter()
@@ -50,17 +53,14 @@ function LoginForm() {
       return
     }
 
-    // If there's a specific callbackUrl (e.g. from middleware redirect), use it
     if (callbackUrl && callbackUrl !== '/') {
       router.push(callbackUrl)
       router.refresh()
       return
     }
 
-    // Otherwise, get the fresh session to find the tenant slug
     const session = await getSession()
     const tenantSlug = (session?.user as any)?.tenantSlug
-
     if (tenantSlug) {
       router.push(`/${tenantSlug}/`)
     } else {
@@ -70,19 +70,21 @@ function LoginForm() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-2xl p-8">
-      <h1 className="text-2xl font-bold text-slate-900 mb-1">Welcome back</h1>
-      <p className="text-slate-500 text-sm mb-6">Sign in to your Klickkk HR account</p>
+    <>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-white mb-1">Welcome back</h1>
+        <p className="text-zinc-400 text-sm">Sign in to your Klickkk HR workspace</p>
+      </div>
 
       {noAccount && (
-        <div className="mb-4 flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <UserX size={18} className="text-amber-500 mt-0.5 shrink-0" />
+        <div className="mb-5 flex items-start gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
+          <UserX size={16} className="text-amber-400 mt-0.5 shrink-0" />
           <div>
-            <p className="text-sm font-medium text-amber-800">No account found</p>
-            <p className="text-xs text-amber-600 mt-0.5">
-              <span className="font-mono">{noAccountEmail}</span> is not registered.{' '}
-              <Link href="/signup" className="font-semibold underline hover:text-amber-800">
-                Sign up for free
+            <p className="text-sm font-medium text-amber-300">No account found</p>
+            <p className="text-xs text-amber-400/80 mt-0.5">
+              <span className="font-mono">{noAccountEmail}</span> isn&apos;t registered.{' '}
+              <Link href="/signup" className="font-semibold underline hover:text-amber-300">
+                Sign up free
               </Link>
             </p>
           </div>
@@ -91,61 +93,59 @@ function LoginForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-1">Email address</label>
+          <label className="block text-sm font-medium text-zinc-300 mb-1.5">Email address</label>
           <input
             {...register('email')}
             type="email"
             placeholder="you@company.com"
-            className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className={inputClass}
           />
-          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+          {errors.email && <p className="text-red-400 text-xs mt-1.5">{errors.email.message}</p>}
         </div>
 
         <div>
-          <div className="flex justify-between items-center mb-1">
-            <label className="block text-sm font-medium text-slate-700">Password</label>
-          </div>
+          <label className="block text-sm font-medium text-zinc-300 mb-1.5">Password</label>
           <div className="relative">
             <input
               {...register('password')}
               type={showPassword ? 'text' : 'password'}
               placeholder="••••••••"
-              className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+              className={`${inputClass} pr-10`}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
             >
-              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
             </button>
           </div>
-          {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
+          {errors.password && <p className="text-red-400 text-xs mt-1.5">{errors.password.message}</p>}
         </div>
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+          className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 disabled:text-blue-400 text-white rounded-xl text-sm font-semibold transition-all shadow-lg shadow-blue-600/20 hover:shadow-blue-500/30 hover:-translate-y-0.5 flex items-center justify-center gap-2"
         >
-          {isSubmitting && <Loader2 size={16} className="animate-spin" />}
+          {isSubmitting ? <Loader2 size={15} className="animate-spin" /> : <ArrowRight size={15} />}
           Sign in
         </button>
       </form>
 
-      <p className="text-center text-sm text-slate-500 mt-6">
+      <p className="text-center text-sm text-zinc-500 mt-6">
         Don&apos;t have an account?{' '}
-        <Link href="/signup" className="text-blue-600 font-medium hover:underline">
+        <Link href="/signup" className="text-blue-400 font-medium hover:text-blue-300 transition-colors">
           Start free trial
         </Link>
       </p>
-    </div>
+    </>
   )
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="bg-white rounded-2xl shadow-2xl p-8 text-center text-slate-400">Loading...</div>}>
+    <Suspense fallback={<div className="text-center text-zinc-500 py-4">Loading...</div>}>
       <LoginForm />
     </Suspense>
   )

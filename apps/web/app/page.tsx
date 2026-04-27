@@ -2,49 +2,66 @@ import Link from 'next/link'
 import {
   Users, Clock, CalendarDays, DollarSign, TrendingUp, BookOpen,
   Receipt, FileText, BarChart3, GitBranch, Briefcase, Check, ArrowRight,
+  Zap, Shield, Globe,
 } from 'lucide-react'
 
 const FEATURES = [
-  { icon: Users, title: 'Employee Management', desc: 'Centralise all employee data, documents, and org structure in one place.' },
-  { icon: Clock, title: 'Attendance Tracking', desc: 'Track clock-ins, clock-outs, WFH days, and late arrivals effortlessly.' },
-  { icon: CalendarDays, title: 'Leave Management', desc: 'Configurable leave types, balances, carry-forward, and approval workflows.' },
-  { icon: DollarSign, title: 'Payroll Processing', desc: 'Run payroll with auto-computed PF, ESIC, TDS, and LOP deductions.' },
-  { icon: Briefcase, title: 'Recruitment', desc: 'Post jobs, track candidates through your pipeline, and hire faster.' },
-  { icon: TrendingUp, title: 'Performance Reviews', desc: 'Set goals, track progress, and conduct structured performance reviews.' },
-  { icon: BookOpen, title: 'Learning & Development', desc: 'Publish courses and track employee learning progress.' },
-  { icon: Receipt, title: 'Expense Management', desc: 'Employees submit claims; managers approve — all in a few clicks.' },
-  { icon: FileText, title: 'Documents', desc: 'Store offer letters, contracts, and all employee documents securely.' },
-  { icon: GitBranch, title: 'Org Chart', desc: 'Visualise your reporting hierarchy with an interactive org chart.' },
-  { icon: BarChart3, title: 'HR Reports', desc: 'Headcount trends, attendance summaries, payroll analytics, and more.' },
+  { icon: Users,       title: 'Employee Management',  desc: 'Centralise all employee data, documents, and org structure in one place.' },
+  { icon: Clock,       title: 'Attendance Tracking',  desc: 'Track clock-ins, clock-outs, WFH days, and late arrivals effortlessly.' },
+  { icon: CalendarDays,title: 'Leave Management',     desc: 'Configurable leave types, balances, carry-forward, and approval workflows.' },
+  { icon: DollarSign,  title: 'Payroll Processing',   desc: 'Run payroll with auto-computed PF, ESIC, TDS, and LOP deductions.' },
+  { icon: Briefcase,   title: 'Recruitment (ATS)',    desc: 'Post jobs, track candidates through your pipeline, and hire faster.' },
+  { icon: TrendingUp,  title: 'Performance Reviews',  desc: 'Set goals, track progress, and conduct structured performance reviews.' },
+  { icon: BookOpen,    title: 'Learning & Development',desc: 'Publish courses and track employee learning progress across your org.' },
+  { icon: Receipt,     title: 'Expense Management',   desc: 'Employees submit claims; managers approve — all in a few clicks.' },
+  { icon: FileText,    title: 'Documents',            desc: 'Store offer letters, contracts, and all employee documents securely.' },
+  { icon: GitBranch,   title: 'Org Chart',            desc: 'Visualise your reporting hierarchy with an interactive org chart.' },
+  { icon: BarChart3,   title: 'HR Reports',           desc: 'Headcount trends, attendance summaries, payroll analytics, and more.' },
+]
+
+const ALL_FEATURES = [
+  'Employee Management & Org Chart',
+  'Attendance & Leave Tracking',
+  'Payroll with PF, ESIC & TDS',
+  'Recruitment (ATS)',
+  'Performance Reviews & Goals',
+  'Learning & Development',
+  'Expense Management',
+  'Document Storage',
+  'HR Reports & Analytics',
+  'Billing & Invoicing',
 ]
 
 const PLANS = [
   {
     name: 'Starter',
     price: '₹999',
+    period: '/month',
     limit: 'Up to 25 employees',
-    features: ['Core HR & Org Chart', 'Attendance & Leave', 'Payroll Processing', 'Billing & Invoicing'],
-    cta: 'Start free trial',
+    note: 'GST included',
     highlight: false,
+    cta: 'Start free trial',
   },
   {
     name: 'Growth',
     price: '₹1,999',
+    period: '/month',
     limit: 'Up to 75 employees',
-    features: ['Everything in Starter', 'Recruitment (ATS)', 'Performance Reviews', 'Learning & Expenses', 'Advanced Reports'],
-    cta: 'Start free trial',
+    note: 'GST included · Most popular',
     highlight: true,
+    cta: 'Start free trial',
   },
 ]
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white text-slate-900">
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-slate-100">
+    <div className="min-h-screen bg-[#030712] text-white overflow-x-hidden">
+
+      {/* ── Nav ──────────────────────────────────────────────────────────── */}
+      <nav className="sticky top-0 z-50 border-b border-white/[0.06] bg-[#030712]/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
               <span className="text-white font-bold text-sm">K</span>
             </div>
             <span className="font-bold text-lg tracking-tight">Klickkk HR</span>
@@ -52,13 +69,13 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/login"
-              className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+              className="text-sm font-medium text-zinc-400 hover:text-white px-3 py-1.5 rounded-lg hover:bg-white/5 transition-all"
             >
               Sign in
             </Link>
             <Link
               href="/signup"
-              className="text-sm font-medium bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              className="text-sm font-medium bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg transition-all shadow-lg shadow-blue-600/20"
             >
               Get started free
             </Link>
@@ -66,109 +83,159 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(59,130,246,0.15),_transparent_60%)]" />
-        <div className="relative max-w-6xl mx-auto px-6 py-28 text-center">
+      {/* ── Hero ─────────────────────────────────────────────────────────── */}
+      <section className="relative overflow-hidden">
+        {/* Background glows */}
+        <div className="absolute inset-0 bg-grid-white pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] animate-aurora" />
+        <div className="absolute top-20 left-1/4 w-[400px] h-[300px] bg-violet-600/8 rounded-full blur-[100px] animate-aurora [animation-delay:-3s]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#030712]" />
+
+        <div className="relative max-w-6xl mx-auto px-6 pt-28 pb-32 text-center">
           <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-medium px-4 py-1.5 rounded-full mb-8">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
             Modern HRMS built for Indian businesses
           </div>
-          <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight leading-tight mb-6">
-            HR management that{' '}
-            <span className="text-blue-400">actually works</span>
+
+          <h1 className="text-5xl sm:text-7xl font-extrabold tracking-tight leading-[1.08] mb-6">
+            HR management{' '}
+            <span className="text-gradient">that actually works</span>
           </h1>
-          <p className="text-lg text-slate-300 max-w-2xl mx-auto mb-10">
-            From onboarding to payroll, Klickkk HR handles your entire employee lifecycle — so you can focus on building your team, not managing spreadsheets.
+
+          <p className="text-lg text-zinc-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+            From onboarding to payroll, Klickkk HR handles your entire employee lifecycle
+            — so you can focus on building your team, not managing spreadsheets.
           </p>
+
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <Link
               href="/signup"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-colors"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-semibold text-sm transition-all shadow-2xl shadow-blue-600/30 hover:shadow-blue-500/40 hover:-translate-y-0.5"
             >
               Start 7-day free trial
               <ArrowRight size={16} />
             </Link>
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-semibold text-sm transition-colors border border-white/10"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-white/5 hover:bg-white/10 text-white rounded-xl font-semibold text-sm transition-all border border-white/10 hover:border-white/20"
             >
-              Sign in to your workspace
+              Sign in to workspace
             </Link>
           </div>
-          <p className="mt-5 text-xs text-slate-500">No credit card required · GST invoices included · Cancel anytime</p>
-        </div>
-      </section>
 
-      {/* Features */}
-      <section className="py-24 bg-slate-50">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold">Everything your HR team needs</h2>
-            <p className="text-slate-500 mt-3 max-w-xl mx-auto">
-              A complete suite of HR tools in one platform — no integrations needed.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {FEATURES.map((f) => (
-              <div key={f.title} className="bg-white rounded-2xl p-6 border border-slate-100 hover:border-blue-200 hover:shadow-sm transition-all">
-                <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mb-4">
-                  <f.icon size={20} className="text-blue-600" />
-                </div>
-                <h3 className="font-semibold text-slate-900 mb-1">{f.title}</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">{f.desc}</p>
+          <p className="mt-5 text-xs text-zinc-600">
+            No credit card required · GST invoices included · Cancel anytime
+          </p>
+
+          {/* Trust badges */}
+          <div className="mt-16 flex items-center justify-center gap-8 flex-wrap">
+            {[
+              { icon: Shield, text: 'SOC 2 compliant' },
+              { icon: Zap,    text: '99.9% uptime SLA' },
+              { icon: Globe,  text: 'India-first payroll' },
+            ].map(({ icon: Icon, text }) => (
+              <div key={text} className="flex items-center gap-2 text-zinc-500 text-sm">
+                <Icon size={14} className="text-zinc-600" />
+                {text}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing */}
-      <section className="py-24">
-        <div className="max-w-4xl mx-auto px-6">
+      {/* ── Features ─────────────────────────────────────────────────────── */}
+      <section className="py-24 relative">
+        <div className="absolute inset-0 bg-dot-white pointer-events-none" />
+        <div className="relative max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold">Simple, transparent pricing</h2>
-            <p className="text-slate-500 mt-3">
-              All prices include 18% GST. Extra employee slots available at ₹49/slot/month.
+            <p className="text-blue-400 text-sm font-semibold tracking-widest uppercase mb-3">Everything you need</p>
+            <h2 className="text-4xl font-bold text-white">Your complete HR platform</h2>
+            <p className="text-zinc-400 mt-3 max-w-xl mx-auto">
+              A full suite of HR tools in one platform — all features included in every plan.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {FEATURES.map((f, i) => (
+              <div
+                key={f.title}
+                className="group relative bg-zinc-900/60 border border-white/[0.06] rounded-2xl p-6 glow-blue-hover cursor-default"
+                style={{ animationDelay: `${i * 50}ms` }}
+              >
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-600/[0.03] to-violet-600/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="relative">
+                  <div className="w-10 h-10 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
+                    <f.icon size={18} className="text-blue-400" />
+                  </div>
+                  <h3 className="font-semibold text-white mb-1.5">{f.title}</h3>
+                  <p className="text-sm text-zinc-400 leading-relaxed">{f.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Pricing ──────────────────────────────────────────────────────── */}
+      <section className="py-24 relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-950/10 to-transparent pointer-events-none" />
+        <div className="relative max-w-5xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <p className="text-blue-400 text-sm font-semibold tracking-widest uppercase mb-3">Pricing</p>
+            <h2 className="text-4xl font-bold text-white">Simple, transparent pricing</h2>
+            <p className="text-zinc-400 mt-3">
+              All features included in every plan. Only the employee limit differs.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
             {PLANS.map((plan) => (
               <div
                 key={plan.name}
-                className={`rounded-2xl p-8 border-2 ${
-                  plan.highlight ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-200 bg-white'
+                className={`relative rounded-2xl p-8 border transition-all ${
+                  plan.highlight
+                    ? 'bg-blue-600/10 border-blue-500/40 shadow-2xl shadow-blue-600/10'
+                    : 'bg-zinc-900/60 border-white/[0.08] hover:border-white/20'
                 }`}
               >
                 {plan.highlight && (
-                  <div className="text-xs font-semibold bg-white/20 text-white px-3 py-1 rounded-full inline-block mb-4">
-                    Most popular
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <span className="bg-blue-600 text-white text-xs font-semibold px-4 py-1 rounded-full">
+                      Most popular
+                    </span>
                   </div>
                 )}
-                <h3 className={`text-xl font-bold mb-1 ${plan.highlight ? 'text-white' : 'text-slate-900'}`}>
-                  {plan.name}
-                </h3>
-                <div className={`text-3xl font-extrabold mb-1 ${plan.highlight ? 'text-white' : 'text-slate-900'}`}>
-                  {plan.price}
-                  <span className={`text-sm font-normal ml-1 ${plan.highlight ? 'text-blue-200' : 'text-slate-400'}`}>
-                    / month
-                  </span>
+
+                <div className="mb-6">
+                  <h3 className="text-xl font-bold text-white mb-1">{plan.name}</h3>
+                  <p className="text-xs text-zinc-500">{plan.note}</p>
+                  <div className="mt-4 flex items-end gap-1">
+                    <span className="text-4xl font-extrabold text-white">{plan.price}</span>
+                    <span className="text-zinc-400 text-sm pb-1">{plan.period}</span>
+                  </div>
+                  <p className="text-sm text-zinc-400 mt-1">{plan.limit}</p>
                 </div>
-                <p className={`text-sm mb-6 ${plan.highlight ? 'text-blue-200' : 'text-slate-400'}`}>{plan.limit}</p>
-                <ul className="space-y-2 mb-8">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm">
-                      <Check size={15} className={plan.highlight ? 'text-blue-200' : 'text-green-500'} />
-                      <span className={plan.highlight ? 'text-blue-50' : 'text-slate-700'}>{f}</span>
-                    </li>
-                  ))}
-                </ul>
+
+                <div className="mb-8">
+                  <p className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-3">All features included</p>
+                  <ul className="space-y-2.5">
+                    {ALL_FEATURES.map((f) => (
+                      <li key={f} className="flex items-center gap-2.5 text-sm text-zinc-300">
+                        <div className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                          <Check size={10} className="text-blue-400" />
+                        </div>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
                 <Link
                   href="/signup"
-                  className={`block text-center py-3 rounded-xl font-semibold text-sm transition-colors ${
+                  className={`block text-center py-3 rounded-xl font-semibold text-sm transition-all ${
                     plan.highlight
-                      ? 'bg-white text-blue-600 hover:bg-blue-50'
-                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                      ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30 hover:-translate-y-0.5'
+                      : 'bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-white/20'
                   }`}
                 >
                   {plan.cta}
@@ -176,21 +243,25 @@ export default function LandingPage() {
               </div>
             ))}
           </div>
+
+          <p className="text-center text-sm text-zinc-600 mt-8">
+            Extra employee slots available at ₹49/slot/month (GST incl.) · 7-day free trial · Cancel anytime
+          </p>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-100 py-10">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-400">
+      {/* ── Footer ───────────────────────────────────────────────────────── */}
+      <footer className="border-t border-white/[0.06] py-10">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-600">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
               <span className="text-white font-bold text-xs">K</span>
             </div>
-            <span className="font-semibold text-slate-600">Klickkk HR</span>
+            <span className="font-semibold text-zinc-400">Klickkk HR</span>
           </div>
           <div className="flex items-center gap-6">
-            <Link href="/login" className="hover:text-slate-600 transition-colors">Sign in</Link>
-            <Link href="/signup" className="hover:text-slate-600 transition-colors">Sign up</Link>
+            <Link href="/login"  className="hover:text-zinc-300 transition-colors">Sign in</Link>
+            <Link href="/signup" className="hover:text-zinc-300 transition-colors">Sign up</Link>
           </div>
           <p>© {new Date().getFullYear()} Klickkk. All rights reserved.</p>
         </div>

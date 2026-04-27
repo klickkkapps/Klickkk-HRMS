@@ -19,7 +19,6 @@ export default async function DashboardLayout({
     redirect('/onboarding')
   }
 
-  // Redirect to their correct slug if URL slug doesn't match
   if (session.user.tenantSlug && slug !== session.user.tenantSlug) {
     redirect(`/${session.user.tenantSlug}/`)
   }
@@ -35,11 +34,11 @@ export default async function DashboardLayout({
 
   return (
     <SessionProvider>
-      <div className="flex h-screen overflow-hidden bg-slate-50">
+      <div className="flex h-screen overflow-hidden bg-slate-50/80">
         <Sidebar tenantName={tenant.name} slug={tenant.slug} />
-        <div className="flex-1 flex flex-col ml-64 overflow-hidden">
+        <div className="flex-1 flex flex-col ml-60 overflow-hidden">
           <Header />
-          <main className="flex-1 overflow-y-auto p-6">
+          <main className="flex-1 overflow-y-auto p-5">
             {children}
           </main>
         </div>
